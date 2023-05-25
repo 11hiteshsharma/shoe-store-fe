@@ -1,7 +1,20 @@
 import HeroBanner from "@/components/HeroBanner";
 import Wrapper from "@/components/Wrapper";
 import ProductCard from "@/components/ProductCard";
-export default function Home() {
+import { useEffect, useState } from "react";
+import { fetchDataFromApi } from "@/utils/api";
+export default function Home({ products }) {
+  // const [data, setData] = useState(null);
+  // useEffect(() => {
+  //   fetchProducts();
+  // }, []);
+
+  // const fetchProducts = async () => {
+  //   const { data } = await fetchDataFromApi("/api/products");
+  //   setData(data);
+  // };
+
+  console.log(products.data, "Hello Ji");
   return (
     <main>
       <HeroBanner />
@@ -22,19 +35,21 @@ export default function Home() {
         {/* product grid start*/}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 my-14 px-5 md:p-0">
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
+          {products?.data?.map((product) => (
+            <ProductCard key={product.id} data={product} />
+          ))}
         </div>
 
         {/* product grid end*/}
       </Wrapper>
     </main>
   );
+}
+
+export async function getStaticProps() {
+  const products = await fetchDataFromApi("/api/products?populate=*");
+
+  return {
+    props: { products },
+  };
 }
