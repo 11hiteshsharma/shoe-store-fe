@@ -1,21 +1,45 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-const ProductCard = () => {
+
+const ProductCard = ({ data: { attributes: p, id } }) => {
+  const calculateDiscountPercentage = (p) => {
+    if (p?.orignal_price && p?.price) {
+      const percentage =
+        ((p?.orignal_price - p.price) / p?.orignal_price) * 100;
+      return Math.round(percentage);
+    }
+    return 0;
+  };
+
+  const discountPercentage = calculateDiscountPercentage(p);
+
   return (
     <Link
-      href="/product/1"
+      href={`/product/${p.slug}`}
       className="transform overflow-hidden bg-white duration-200 hover:scale-105 cursor-pointer"
     >
-      <img className="w-full" src="/product-1.webp" alt="Product Image" />
+      <Image
+        width={500}
+        height={500}
+        src={p?.thumbnail?.data?.attributes?.url}
+        alt={p?.name}
+      />
       <div className="p-4 text-black/[0.9]">
-        <h2 className="text-lg font-medium">Product Name</h2>
+        <h2 className="text-lg font-medium">{p?.name}</h2>
         <div className="flex items-center text-black/[0.5]">
-          <p className="mr-2 text-lg font-semibold">$20.00</p>
-          <p className="text-base font-medium line-through">$25.00</p>
-          <p className="ml-auto text-base font-medium text-green-500">
-            20% off
-          </p>
+          <p className="mr-2 text-lg font-semibold">&#8377;{p?.price}</p>
+
+          {p?.orignal_price && (
+            <>
+              <p className="text-base font-medium line-through">
+                &#8377;{p?.orignal_price}
+              </p>
+              <p className="ml-auto text-base font-medium text-green-500">
+                {discountPercentage}% off
+              </p>
+            </>
+          )}
         </div>
       </div>
     </Link>
